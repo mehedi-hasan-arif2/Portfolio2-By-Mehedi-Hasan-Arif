@@ -6,6 +6,35 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+// rate limiter (per IP) 
+const RATE_LIMIT_WINDOW_MS = 60 * 1000 // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 3 // max 3 submissions per minute per IP
+
+const rateLimitMap = new Map<string, number[]>()
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now()
+  const timestamps = rateLimitMap.get(ip) || []
+
+  // Keep only timestamps within the current window
+  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS)
+
+  if (recent.length >= RATE_LIMIT_MAX_REQUESTS) {
+    rateLimitMap.set(ip, recent)
+    return true
+  }
+
+  recent.push(now)
+  rateLimitMap.set(ip, recent)
+  return false
+}
+
+function getClientIp(req: NextRequest): string {
+  const forwardedFor = req.headers.get('x-forwarded-for')
+  if (forwardedFor) return forwardedFor.split(',')[0].trim()
+  return req.headers.get('x-real-ip') || 'unknown'
+}
+
 function buildEmailHtml({
   name,
   email,
@@ -111,6 +140,15 @@ function buildEmailHtml({
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req)
+
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { message: 'Too many requests. Please wait a minute and try again.' },
+        { status: 429 }
+      )
+    }
+
     await connectDB()
     const { name, email, subject, message } = await req.json()
 
