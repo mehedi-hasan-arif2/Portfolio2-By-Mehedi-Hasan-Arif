@@ -14,21 +14,23 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         {children}
         <Toaster
           position="top-right"
-          gap={10}
+          gap={12}
           toastOptions={{
             duration: 4500,
             style: {
               background: 'var(--bg-secondary)',
               border: '1px solid var(--border)',
-              borderRadius: '12px',
+              borderRadius: '14px',
               color: 'var(--text-primary)',
-              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.28)',
-              padding: '14px 16px',
-              fontSize: '14px',
+              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.35)',
+              padding: '16px 18px',
+              fontSize: '15px',
+              minWidth: '320px',
             },
             classNames: {
-              title: 'font-semibold',
-              description: 'text-sm text-[var(--text-secondary)]',
+              title: 'font-semibold text-[15px]',
+              description: 'text-sm text-[var(--text-secondary)] mt-0.5',
+              icon: 'scale-110',
             },
           }}
         />

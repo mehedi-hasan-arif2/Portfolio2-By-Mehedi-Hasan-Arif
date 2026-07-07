@@ -110,7 +110,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-6 max-w-2xl md:max-w-4xl">
       <div>
         <h1 className="font-heading font-bold text-2xl" style={{ color: 'var(--text-primary)' }}>
           Profile
@@ -253,9 +253,20 @@ export default function ProfilePage() {
 
           <div className="mt-5">
             <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--text-secondary)' }}>
-              Resume PDF URL
+              Resume (PDF)
             </label>
-            <input {...register('resumeUrl')} placeholder="Upload via Cloudinary and paste URL, or use ImageUpload above" className="w-full px-4 py-2.5 rounded-lg text-sm outline-none" style={inputStyle} />
+            <Controller
+              name="resumeUrl"
+              control={control}
+              render={({ field }) => (
+                <ImageUpload
+                  value={field.value || ''}
+                  onChange={(v) => field.onChange(v)}
+                  folder="resume"
+                  accept="application/pdf"
+                />
+              )}
+            />
           </div>
         </div>
 

@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { X, Mail, MailOpen, Loader2 } from 'lucide-react'
-import { DataTable, type DataTableColumn } from '@/components/admin/AdminUI'
+import { DataTable, ConfirmDialog, type DataTableColumn } from '@/components/admin/AdminUI'
 import { formatDate } from '@/lib/utils'
 import type { IContact } from '@/types'
 
@@ -17,6 +17,7 @@ async function fetchMessages(): Promise<IContact[]> {
 export default function MessagesPage() {
   const queryClient = useQueryClient()
   const [selected, setSelected] = useState<IContact | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<IContact | null>(null)
 
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ['messages-admin'],
@@ -170,7 +171,7 @@ export default function MessagesPage() {
                 Reply
               </a>
               <button
-                onClick={() => deleteMutation.mutate(selected._id)}
+                onClick={() => setPendingDelete(selected)}
                 className="px-4 py-2.5 rounded-lg text-sm font-medium border"
                 style={{ borderColor: 'var(--border)', color: 'var(--color-error)' }}
               >
@@ -180,6 +181,17 @@ export default function MessagesPage() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!pendingDelete}
+        title="Delete this message?"
+        message="This will permanently remove the message. This action cannot be undone."
+        onConfirm={() => {
+          if (pendingDelete) deleteMutation.mutate(pendingDelete._id)
+          setPendingDelete(null)
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   )
 }

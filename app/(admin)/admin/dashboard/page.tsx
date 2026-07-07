@@ -28,20 +28,20 @@ function StatCard({
 }) {
   return (
     <div
-      className="rounded-xl border p-5 flex items-center gap-4"
+      className="rounded-xl border p-4 md:p-5 flex flex-col gap-3"
       style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}
     >
       <div
-        className="w-11 h-11 rounded-lg flex items-center justify-center shrink-0"
+        className="w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center shrink-0"
         style={{ background: 'color-mix(in srgb, var(--brand-primary) 12%, transparent)' }}
       >
-        <Icon size={19} strokeWidth={1.75} style={{ color: 'var(--brand-primary)' }} />
+        <Icon size={18} strokeWidth={1.75} style={{ color: 'var(--brand-primary)' }} />
       </div>
       <div>
-        <p className="text-2xl font-heading font-bold" style={{ color: 'var(--text-primary)' }}>
+        <p className="text-xl md:text-2xl font-heading font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>
           {value}
         </p>
-        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+        <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
           {label}
         </p>
       </div>
