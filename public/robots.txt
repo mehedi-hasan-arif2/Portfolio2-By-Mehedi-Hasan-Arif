@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://yourportfolio.com/sitemap.xml
+Sitemap: https://portfolio-mehedi-hasan-arif.vercel.app/sitemap.xml
