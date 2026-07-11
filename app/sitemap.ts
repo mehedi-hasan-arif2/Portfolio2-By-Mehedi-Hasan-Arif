@@ -5,9 +5,6 @@ import Blog from '@/models/Blog'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourportfolio.com'
 
-  await connectDB()
-  const blogs = await Blog.find({ status: 'published' }).select('slug updatedAt')
-
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: siteUrl, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 1 },
     { url: `${siteUrl}/projects`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
@@ -15,12 +12,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/contact`, lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.6 },
   ]
 
-  const blogRoutes: MetadataRoute.Sitemap = blogs.map((blog) => ({
-    url: `${siteUrl}/blog/${blog.slug}`,
-    lastModified: new Date(blog.updatedAt),
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }))
+  try {
+    await connectDB()
+    const blogs = await Blog.find({ status: 'published' }).select('slug updatedAt')
 
-  return [...staticRoutes, ...blogRoutes]
+    const blogRoutes: MetadataRoute.Sitemap = blogs.map((blog) => ({
+      url: `${siteUrl}/blog/${blog.slug}`,
+      lastModified: new Date(blog.updatedAt),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }))
+
+    return [...staticRoutes, ...blogRoutes]
+  } catch (error) {
+    // If DB fails, still return static routes instead of crashing the whole route
+    console.error('Sitemap: failed to fetch blogs from DB', error)
+    return staticRoutes
+  }
 }
